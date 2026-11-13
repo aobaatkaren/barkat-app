@@ -1,56 +1,64 @@
-# Welcome to your Expo app 👋
+# Barkat
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Barkat is a surplus-food app for Pakistan, built for iOS and Android. Restaurants, bakeries and grocers list food they have left at closing time as discounted "surprise bags". Customers reserve a bag, get a pickup code, and pay in cash when they collect it.
 
-## Get started
+It is built with **React Native + Expo** (SDK 58), so one codebase runs on iOS, Android and the web.
 
-1. Install dependencies
+## Features (version 1)
+
+**Customers**
+- Browse surplus bags by city (Karachi, Lahore, Islamabad), with price, discount and pickup time.
+- Reserve 1–3 bags and pay at pickup (online payments come later).
+- Get a 5-character pickup code, and cancel a reservation if needed.
+- See bags rescued and money saved.
+- Sign in with a mobile number and OTP.
+- Use the app in English or Urdu.
+
+**Shops (merchants)**
+- Register a shop from the Profile tab.
+- Add bags with price, original value, quantity and pickup window, and hide or show them.
+- Check a customer's pickup code and mark the order collected.
+- See all reservations.
+
+## Run it on your phone
+
+1. Install [Node.js](https://nodejs.org) (LTS) and, if you like, [VS Code](https://code.visualstudio.com).
+2. Install **Expo Go** on your phone from the App Store or Play Store.
+3. In this folder, run:
 
    ```bash
    npm install
-   ```
-
-2. Start the app
-
-   ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+4. Scan the QR code with your phone's camera on iOS, or with Expo Go on Android.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+**Demo mode:** the OTP is always `1234`. Data is stored on the phone only, so each phone has its own copy.
 
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Project structure
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+src/app/                 Screens (Expo Router: each file is a screen)
+  (tabs)/index.tsx       Discover: bags in the selected city
+  (tabs)/orders.tsx      My orders
+  (tabs)/shop.tsx        Merchant dashboard (only shown for shop owners)
+  (tabs)/profile.tsx     Sign in, language, city, register shop
+  deal/[id].tsx          Bag details and reservation
+  order/[id].tsx         Pickup code
+  login.tsx              Phone and OTP sign-in
+  shop/register.tsx      Register a shop
+  shop/new-bag.tsx       Add a bag
+src/lib/store.tsx        All data logic (demo mode: on-device storage)
+src/lib/i18n.ts          English and Urdu text
+src/lib/seed.ts          Demo shops and bags
+supabase/schema.sql      Database schema for the real backend
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+## Roadmap
 
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+1. **Real backend:** create a free [Supabase](https://supabase.com) project, run `supabase/schema.sql`, and replace the functions in `src/lib/store.tsx` with Supabase calls. Customers and shops then share live data.
+2. **SMS OTP:** connect an SMS provider to Supabase Auth, such as Twilio or a local Pakistani SMS gateway.
+3. **Admin approval** for new shops (the `approved` column already exists).
+4. **Maps and distance**, plus push notifications such as "your favourite bakery just listed a bag".
+5. **Online payments:** JazzCash, Easypaisa and cards through a gateway such as Safepay or PayFast. These need business registration.
+6. **Publish** with EAS Build (`npx eas-cli build`), which builds the iOS app in the cloud without a Mac. You'll need an Apple Developer account ($99/yr) and a Google Play Console account ($25 once).

@@ -1,18 +1,44 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+import { C } from '@/constants/theme';
+import { StoreProvider, useStore } from '@/lib/store';
 
 SplashScreen.preventAutoHideAsync();
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+function RootStack() {
+  const { ready, t } = useStore();
+  useEffect(() => {
+    if (ready) SplashScreen.hideAsync();
+  }, [ready]);
+  if (!ready) return null;
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <Stack
+      screenOptions={{
+        headerStyle: { backgroundColor: C.bg },
+        headerTintColor: C.primary,
+        headerTitleStyle: { color: C.text, fontWeight: '700' },
+        contentStyle: { backgroundColor: C.bg },
+        headerBackTitle: '',
+      }}>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="deal/[id]" options={{ title: '' }} />
+      <Stack.Screen name="order/[id]" options={{ title: t('pickupCode') }} />
+      <Stack.Screen name="login" options={{ title: t('login'), presentation: 'modal' }} />
+      <Stack.Screen name="shop/register" options={{ title: t('becomeMerchant') }} />
+      <Stack.Screen name="shop/new-bag" options={{ title: t('addBag'), presentation: 'modal' }} />
+    </Stack>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <StoreProvider>
+      <StatusBar style="dark" />
+      <RootStack />
+    </StoreProvider>
   );
 }
